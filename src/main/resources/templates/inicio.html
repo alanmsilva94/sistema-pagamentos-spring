@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <title>Página Inicial</title>
+</head>
+<body>
+    <header>
+        <a th:href="@{/inicio}"><button class="btn-inicio">Início</button></a>
+        <a th:href="@{/logout}"><button class="btn-sair">Sair</button></a>
+    </header>
+
+    <div class="container">
+        <aside class="menu-lateral">
+            <div class="logotipo">
+                <img th:src="@{/img/logo.png}" alt="Logo da Empresa" />
+            </div>
+
+            <div class="menu-item">Módulo Financeiro</div>
+            <input type="text" class="pesquisar" id="pesquisar-rotina" placeholder="Digite a rotina...">
+            <nav>
+                <ul>
+                    <li class="menu-categoria">
+                        <a href="#" class="categoria-titulo">Cadastro</a>
+                        <ul class="submenu">
+                            <li><a th:href="@{/empresas/nova}" data-rotina="cadastrar fornecedor empresa">Cadastrar Empresa</a></li>
+                            <li><a th:href="@{/pagamentos/novo}" data-rotina="cadastrar pagamento">Cadastrar Pagamento</a></li>
+                        </ul>
+                    </li>
+                    <li class="menu-categoria">
+                        <a href="#" class="categoria-titulo">Consulta</a>
+                        <ul class="submenu">
+                            <li><a th:href="@{/empresas}" data-rotina="lista empresas fornecedores consulta">Lista de Empresas</a></li>
+                            <li><a th:href="@{/pagamentos}" data-rotina="lista pagamentos consulta">Lista de Pagamentos</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="conteudo" id="conteudo-principal">
+            <div class="container-centralizado">
+                <section>
+                    <div class="bem-vindo">
+                        <img th:src="@{/img/bem-vindo.png}" alt="Imagem de boas-vindas ao sistema financeiro" />
+                    </div>
+                    <p>Aqui você pode gerenciar cadastros, consultar relatórios e acompanhar seus pagamentos.</p>
+                </section>
+
+                <section class="card-atualizacoes">
+                    <div class="atualizacoes">
+                        <h2>Atualizações Recentes</h2>
+                        <ul>
+                            <li>🔧 Novo módulo de pagamentos implementado.</li>
+                            <li>📊 Sistema de gestão de fornecedores disponível.</li>
+                            <li>🔒 Sistema de autenticação seguro.</li>
+                            <li>💼 Controle completo de departamentos e funcionários.</li>
+                        </ul>
+                    </div>
+                </section>
+                
+                <section class="card-acesso-rapido">
+                    <h2>Acesso Rápido</h2>
+                    <div class="botoes-acesso-rapido">
+                        <a th:href="@{/empresas}" class="btn-rapido">📋 Fornecedores</a>
+                        <a th:href="@{/pagamentos}" class="btn-rapido">💳 Pagamentos</a>
+                        <a th:href="@{/empresas/nova}" class="btn-rapido">➕ Novo Fornecedor</a>
+                        <a th:href="@{/pagamentos/novo}" class="btn-rapido">💸 Novo Pagamento</a>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Sistema de abas por clique (não hover)
+            $('.categoria-titulo').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const $categoria = $(this).closest('.menu-categoria');
+                const $submenu = $categoria.find('.submenu');
+                
+                // Fecha outros submenus
+                $('.submenu').not($submenu).slideUp(300);
+                $('.menu-categoria').not($categoria).removeClass('ativo');
+                
+                // Alterna o submenu atual
+                $submenu.slideToggle(300);
+                $categoria.toggleClass('ativo');
+            });
+            
+            // Fecha submenus ao clicar fora
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.menu-categoria').length) {
+                    $('.submenu').slideUp(300);
+                    $('.menu-categoria').removeClass('ativo');
+                }
+            });
+            
+            // Sistema de pesquisa em tempo real
+            $('#pesquisar-rotina').on('input', function() {
+                const termo = $(this).val().toLowerCase().trim();
+                
+                if (termo === '') {
+                    // Mostra tudo se não há termo de pesquisa
+                    $('.menu-categoria').show();
+                    $('.submenu li').show();
+                    $('.menu-categoria').removeClass('com-resultados');
+                    return;
+                }
+                
+                // Esconde todas as categorias inicialmente
+                $('.menu-categoria').hide().removeClass('com-resultados');
+                $('.submenu li').hide();
+                
+                // Procura por correspondências
+                $('.submenu li').each(function() {
+                    const $item = $(this);
+                    const textoItem = $item.find('a').data('rotina') + ' ' + $item.find('a').text().toLowerCase();
+                    
+                    if (textoItem.includes(termo)) {
+                        $item.show();
+                        const $categoria = $item.closest('.menu-categoria');
+                        $categoria.show().addClass('com-resultados');
+                        
+                        // Expande a categoria que tem resultados
+                        $categoria.find('.submenu').slideDown(300);
+                        $categoria.addClass('ativo');
+                    }
+                });
+                
+                // Mostra mensagem se não encontrar resultados
+                if ($('.menu-categoria:visible').length === 0) {
+                    $('.menu-lateral nav').append(
+                        '<div class="sem-resultados">Nenhuma rotina encontrada para: "' + termo + '"</div>'
+                    );
+                } else {
+                    $('.sem-resultados').remove();
+                }
+            });
+            
+            // Limpa pesquisa ao pressionar Escape
+            $('#pesquisar-rotina').on('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    $(this).val('').trigger('input');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

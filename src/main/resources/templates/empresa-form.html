@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro de Empresa</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/cadastroEmpresa.css}" />
+</head>
+<body>
+    <header>
+        <a th:href="@{/inicio}"><button class="btn-inicio">Início</button></a>
+        <a th:href="@{/logout}"><button class="btn-sair">Sair</button></a>
+    </header>
+
+    <div class="titulo-pagina">
+        <h1 th:text="${empresa.id != null} ? 'EDITAR EMPRESA' : 'CADASTRAR EMPRESA'">CADASTRAR EMPRESA</h1>
+    </div>
+
+    <div class="abas">
+        <button id="btn-dados-empresa" class="botao-aba ativo">Dados da Empresa</button>
+        <button id="btn-dados-bancarios" class="botao-aba">Dados Bancários</button>
+    </div>
+
+    <main>
+        <form th:action="@{/empresas/salvar}" method="post">
+            <!-- Dados da Empresa -->
+            <input type="hidden" th:value="${empresa.id}" name="id" />
+            
+            <div class="container-formulario">
+                <div class="botoes">
+                    <button type="submit">Salvar</button>
+                    <button type="reset">Limpar</button>
+                    <a th:href="@{/empresas}"><button type="button">Cancelar</button></a>
+                </div>
+
+                <!-- Dados da Empresa -->
+                <div class="form-dados-empresa ativo" id="dados-empresa">
+                    <div class="linha-campos">
+                        <div>
+                            <label for="nome">Nome da Empresa *</label>
+                            <input type="text" id="nome" name="nome" th:value="${empresa.nome}" required />
+                        </div>
+
+                        <div>
+                            <label for="cnpj">CNPJ *</label>
+                            <input type="text" id="cnpj" name="cnpj" th:value="${empresa.cnpj}" placeholder="00.000.000/0000-00" required />
+                        </div>
+                    </div>
+
+                    <div class="linha-campos">
+                        <div>
+                            <label for="endereco">Endereço</label>
+                            <input type="text" id="endereco" name="endereco" th:value="${empresa.endereco}" />
+                        </div>
+
+                        <div>
+                            <label for="uf">UF</label>
+                            <input type="text" id="uf" name="uf" th:value="${empresa.uf}" maxlength="2" placeholder="SP" />
+                        </div>
+
+                        <div>
+                            <label for="cidade">Cidade</label>
+                            <input type="text" id="cidade" name="cidade" th:value="${empresa.cidade}" />
+                        </div>
+                    </div>
+
+                    <div class="linha-campos">
+                        <div>
+                            <label for="telefone">Telefone</label>
+                            <input type="tel" id="telefone" name="telefone" th:value="${empresa.telefone}" placeholder="(00) 00000-0000" />
+                        </div>
+
+                        <div>
+                            <label for="email">E-mail</label>
+                            <input type="email" id="email" name="email" th:value="${empresa.email}" placeholder="email@empresa.com" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dados Bancários -->
+                <div class="form-dados-bancarios" id="dados-bancarios">
+                    <div class="linha-campos">
+                        <div>
+                            <label for="codigo-banco">Código do Banco</label>
+                            <input type="text" id="codigo-banco" name="codigoBanco" th:value="${banco?.codigoBanco}" />
+                        </div>
+
+                        <div>
+                            <label for="banco">Banco</label>
+                            <input type="text" id="banco" name="nomeBanco" th:value="${banco?.nomeBanco}" />
+                        </div>
+
+                        <div>
+                            <label for="tipo-conta">Tipo da Conta</label>
+                            <select id="tipo-conta" name="tipoConta">
+                                <option value="">Tipo da Conta</option>
+                                <option value="CORRENTE" th:selected="${banco?.tipoConta == 'CORRENTE'}">Corrente</option>
+                                <option value="POUPANCA" th:selected="${banco?.tipoConta == 'POUPANCA'}">Poupança</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="agencia">Agência</label>
+                            <input type="text" id="agencia" name="agencia" th:value="${banco?.agencia}" />
+                        </div>
+
+                        <div>
+                            <label for="digito-agencia">Digito da agência</label>
+                            <input type="text" id="digito-agencia" name="digitoAgencia" th:value="${banco?.digitoAgencia}" />
+                        </div>
+
+                        <div>
+                            <label for="conta">Conta</label>
+                            <input type="text" id="conta" name="conta" th:value="${banco?.conta}" />
+                        </div>
+
+                        <div>
+                            <label for="digito-conta">Digito da conta</label>
+                            <input type="text" id="digito-conta" name="digitoConta" th:value="${banco?.digitoConta}" />
+                        </div>
+
+                        <div>
+                            <label for="pix">Chave pix</label>
+                            <input type="text" id="pix" name="chavePix" th:value="${banco?.chavePix}" />
+                        </div>
+
+                        <div>
+                            <label for="titular">Nome do Titular</label>
+                            <input type="text" id="titular" name="nomeRecebedor" th:value="${banco?.nomeRecebedor}" />
+                        </div>
+
+                        <div>
+                            <label for="cnpj-titular">CNPJ do Titular</label>
+                            <input type="text" id="cnpj-titular" name="cnpjRecebedor" th:value="${banco?.cnpjRecebedor}" placeholder="00.000.000/0000-00" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <script>
+
+        document.getElementById('btn-dados-empresa').addEventListener('click', function() {
+            document.getElementById('dados-empresa').classList.add('ativo');
+            document.getElementById('dados-bancarios').classList.remove('ativo');
+            this.classList.add('ativo');
+            document.getElementById('btn-dados-bancarios').classList.remove('ativo');
+        });
+
+        document.getElementById('btn-dados-bancarios').addEventListener('click', function() {
+            document.getElementById('dados-bancarios').classList.add('ativo');
+            document.getElementById('dados-empresa').classList.remove('ativo');
+            this.classList.add('ativo');
+            document.getElementById('btn-dados-empresa').classList.remove('ativo');
+        });
+
+
+        $(document).ready(function() {
+            $('#cnpj').mask('00.000.000/0000-00');
+            $('#telefone').mask('(00) 00000-0000');
+            $('#cnpj-titular').mask('00.000.000/0000-00');
+        });
+
+        $(document).ready(function() {
+            const hasBancoData = /*[[${banco?.id != null}]]*/ false;
+            if (hasBancoData) {
+                document.getElementById('btn-dados-bancarios').click();
+            }
+        });
+    </script>
+</body>
+</html>

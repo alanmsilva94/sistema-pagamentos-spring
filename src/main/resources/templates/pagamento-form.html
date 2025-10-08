@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Cadastro de Pagamento</title>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+        <link rel="stylesheet" th:href="@{/css/cadastroPgto.css}" />
+    </head>
+    <body>
+        <header>
+            <a th:href="@{/inicio}"><button class="btn-inicio">Início</button></a>
+            <a th:href="@{/logout}"><button class="btn-sair">Sair</button></a>
+        </header>
+
+        <div class="titulo-pagina">
+            <h1 th:text="${pagamento.id != null} ? 'EDITAR PAGAMENTO' : 'CADASTRAR PAGAMENTO'"></h1>
+        </div>
+
+        <div class="abas">
+            <button id="btn-dados-gerais" class="botao-aba ativo" onclick="alternarAba('dados-gerais')">Dados Gerais</button>
+            <button id="btn-departamento" class="botao-aba" onclick="alternarAba('departamento')">Departamento/Funcionário</button>
+        </div>
+
+        <main>
+            <form th:action="@{/pagamentos/salvar}" th:object="${pagamento}" method="post">
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="container-formulario">
+                    <div class="botoes">
+                        <button type="submit">Salvar</button>
+                        <button type="reset">Limpar</button>
+                        <a th:href="@{/pagamentos}"><button type="button">Cancelar</button></a>
+                    </div>
+
+                    <!-- Dados Gerais -->
+                    <div class="form-dados-gerais ativo" id="dados-gerais">
+                        <div class="linha-campos">
+                            <div>
+                                <label for="dataPagamento">Data do Pagamento *</label>
+                                <input type="date" id="dataPagamento" th:field="*{dataPagamento}" required />
+                            </div>
+
+                            <div>
+                                <label for="valor">Valor a Pagar *</label>
+                                <input type="number" id="valor" th:field="*{valor}" step="0.01" min="0" placeholder="0.00" required />
+                            </div>
+                        </div>
+
+                        <div class="linha-campos">
+                            <div>
+                                <label for="empresaId">Empresa/Fornecedor *</label>
+                                <select id="empresaId" name="empresaId" required>
+                                    <option value="">Selecione uma empresa</option>
+                                    <option th:each="empresa : ${empresas}" 
+                                            th:value="${empresa.id}" 
+                                            th:text="${empresa.nome}"
+                                            th:selected="${pagamento.empresa != null && pagamento.empresa.id == empresa.id}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="cnpjEmpresa">CNPJ da Empresa *</label>
+                                <input type="text" id="cnpjEmpresa" 
+                                       th:value="${pagamento.empresa != null ? pagamento.empresa.cnpj : ''}" 
+                                       placeholder="CNPJ da empresa selecionada" readonly />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="codigoBoleto">Código de Barras (boleto)</label>
+                            <input type="text" id="codigoBoleto" th:field="*{codigoBoleto}" placeholder="Insira o código de barras" />
+                        </div>
+                    </div>
+
+                    <!-- Departamento/Funcionário -->
+                    <div class="form-departamento" id="departamento">
+                        <div class="linha-campos">
+                            <div>
+                                <label for="departamentoId">Departamento</label>
+                                <select id="departamentoId" name="departamentoId">
+                                    <option value="">Selecione um departamento</option>
+                                    <option th:each="departamento : ${departamentos}" 
+                                            th:value="${departamento.id}" 
+                                            th:text="${departamento.nome_depart}"
+                                            th:selected="${pagamento.funcionario != null && pagamento.funcionario.departamento != null && pagamento.funcionario.departamento.id == departamento.id}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="funcionarioId">Funcionário Responsável</label>
+                                <select id="funcionarioId" name="funcionarioId">
+                                    <option value="">Selecione um funcionário</option>
+                                    <option th:each="funcionario : ${funcionarios}" 
+                                            th:value="${funcionario.id}" 
+                                            th:text="${funcionario.nome}"
+                                            th:selected="${pagamento.funcionario != null && pagamento.funcionario.id == funcionario.id}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="linha-campos">
+                            <div>
+                                <label for="emailFuncionario">Email do Funcionário</label>
+                                <input type="email" id="emailFuncionario" 
+                                       th:value="${pagamento.funcionario != null ? pagamento.funcionario.email : ''}" 
+                                       placeholder="email@empresa.com" readonly />
+                            </div>
+
+                            <div>
+                                <label for="telefoneFuncionario">Telefone do Funcionário</label>
+                                <input type="tel" id="telefoneFuncionario" 
+                                       th:value="${pagamento.funcionario != null ? pagamento.funcionario.telefone : ''}" 
+                                       placeholder="(00) 00000-0000" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </main>
+
+        <script>
+            // Função para alternar entre abas
+            function alternarAba(abaId) {
+                // Remove a classe 'ativo' de todos os botões de aba
+                document.querySelectorAll('.botao-aba').forEach(botao => {
+                    botao.classList.remove('ativo');
+                });
+
+                // Adiciona a classe 'ativo' no botão clicado
+                document.getElementById('btn-' + abaId).classList.add('ativo');
+
+                // Esconde todos os formulários
+                document.querySelectorAll('.form-dados-gerais, .form-departamento').forEach(form => {
+                    form.classList.remove('ativo');
+                });
+
+                // Mostra apenas o formulário da aba selecionada
+                document.getElementById(abaId).classList.add('ativo');
+            }
+
+            // Quando a página carrega
+            document.addEventListener('DOMContentLoaded', function () {
+                // Aplica máscaras nos campos
+                if (typeof $.fn.mask !== 'undefined') {
+                    $('#cnpjEmpresa').mask('00.000.000/0000-00');
+                    $('#telefoneFuncionario').mask('(00) 00000-0000');
+                }
+
+                // Configura eventos para empresa
+                const empresaSelect = document.getElementById('empresaId');
+                const cnpjInput = document.getElementById('cnpjEmpresa');
+                
+                if (empresaSelect && cnpjInput) {
+                    empresaSelect.addEventListener('change', function() {
+                        const empresaId = this.value;
+                        // Busca os dados da empresa via AJAX
+                        if (empresaId) {
+                            fetch(`/empresas/${empresaId}/bancos`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Empresa não encontrada');
+                                    }
+                                    return response.json();
+                                })
+                                .then(empresaData => {
+                                    // Assumindo que a empresa tem um CNPJ
+                                    // Você pode precisar ajustar conforme sua estrutura de dados
+                                    if (empresaData && empresaData.length > 0 && empresaData[0].empresa) {
+                                        cnpjInput.value = empresaData[0].empresa.cnpj || '';
+                                    } else {
+                                        // Se não encontrar pelos bancos, busca a empresa diretamente
+                                        fetch(`/api/empresas/${empresaId}`)
+                                            .then(response => response.json())
+                                            .then(empresa => {
+                                                cnpjInput.value = empresa.cnpj || '';
+                                            })
+                                            .catch(error => {
+                                                console.error('Erro ao buscar empresa:', error);
+                                                cnpjInput.value = '';
+                                            });
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Erro ao buscar dados da empresa:', error);
+                                    cnpjInput.value = '';
+                                });
+                        } else {
+                            cnpjInput.value = '';
+                        }
+                    });
+                }
+
+                // Configura eventos para funcionário
+                const funcionarioSelect = document.getElementById('funcionarioId');
+                const emailFuncionarioInput = document.getElementById('emailFuncionario');
+                const telefoneFuncionarioInput = document.getElementById('telefoneFuncionario');
+                
+                if (funcionarioSelect && emailFuncionarioInput && telefoneFuncionarioInput) {
+                    funcionarioSelect.addEventListener('change', function() {
+                        const funcionarioId = this.value;
+                        // Busca os dados do funcionário via AJAX
+                        if (funcionarioId) {
+                            fetch(`/api/funcionarios/${funcionarioId}`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Funcionário não encontrado');
+                                    }
+                                    return response.json();
+                                })
+                                .then(funcionario => {
+                                    emailFuncionarioInput.value = funcionario.email || '';
+                                    telefoneFuncionarioInput.value = funcionario.telefone || '';
+                                })
+                                .catch(error => {
+                                    console.error('Erro ao buscar funcionário:', error);
+                                    emailFuncionarioInput.value = '';
+                                    telefoneFuncionarioInput.value = '';
+                                });
+                        } else {
+                            emailFuncionarioInput.value = '';
+                            telefoneFuncionarioInput.value = '';
+                        }
+                    });
+                }
+
+                // Formata o valor monetário quando o campo perde o foco
+                const valorInput = document.getElementById('valor');
+                if (valorInput) {
+                    valorInput.addEventListener('blur', function () {
+                        let value = parseFloat(this.value);
+                        if (!isNaN(value) && value >= 0) {
+                            this.value = value.toFixed(2);
+                        } else if (this.value !== '') {
+                            alert('Por favor, insira um valor válido maior ou igual a zero.');
+                            this.value = '';
+                            this.focus();
+                        }
+                    });
+                }
+
+                // Validação do formulário antes de enviar
+                const form = document.querySelector('form');
+                if (form) {
+                    form.addEventListener('submit', function (e) {
+                        const dataPagamento = document.getElementById('dataPagamento').value;
+                        const valor = document.getElementById('valor').value;
+                        const empresaId = document.getElementById('empresaId').value;
+
+                        // Validações básicas
+                        if (!dataPagamento || !valor || !empresaId) {
+                            e.preventDefault();
+                            alert('Por favor, preencha todos os campos obrigatórios (*)');
+                            return false;
+                        }
+
+                        if (parseFloat(valor) <= 0) {
+                            e.preventDefault();
+                            alert('O valor deve ser maior que zero');
+                            return false;
+                        }
+
+                        return true;
+                    });
+                }
+            });
+
+            // Função para carregar funcionários por departamento
+            function carregarFuncionariosPorDepartamento(departamentoId) {
+                if (!departamentoId) {
+                    const funcionarioSelect = document.getElementById('funcionarioId');
+                    if (funcionarioSelect) {
+                        funcionarioSelect.innerHTML = '<option value="">Selecione um funcionário</option>';
+                    }
+                    return;
+                }
+
+                fetch(`/pagamentos/api/funcionarios/${departamentoId}`)
+                    .then(response => response.json())
+                    .then(funcionarios => {
+                        const funcionarioSelect = document.getElementById('funcionarioId');
+                        const emailInput = document.getElementById('emailFuncionario');
+                        const telefoneInput = document.getElementById('telefoneFuncionario');
+                        
+                        if (funcionarioSelect) {
+                            funcionarioSelect.innerHTML = '<option value="">Selecione um funcionário</option>';
+                            funcionarios.forEach(funcionario => {
+                                const option = document.createElement('option');
+                                option.value = funcionario.id;
+                                option.textContent = funcionario.nome;
+                                option.setAttribute('data-email', funcionario.email || '');
+                                option.setAttribute('data-telefone', funcionario.telefone || '');
+                                funcionarioSelect.appendChild(option);
+                            });
+                        }
+                        
+                        // Limpa campos de email e telefone
+                        if (emailInput) emailInput.value = '';
+                        if (telefoneInput) telefoneInput.value = '';
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar funcionários:', error);
+                    });
+            }
+
+            // Configura evento para departamento
+            const departamentoSelect = document.getElementById('departamentoId');
+            if (departamentoSelect) {
+                departamentoSelect.addEventListener('change', function() {
+                    carregarFuncionariosPorDepartamento(this.value);
+                });
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Senha</title>
+   <link th:href="@{/css/recuperar.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="logotipo">
+            <img th:src="@{/img/logo.png}" alt="Logo da Empresa" />
+        </div>
+        <h1>RECUPERAR SENHA</h1>
+        
+        <!-- FORM integrado com o backend -->
+        <form th:action="@{/recuperar-senha}" method="post">
+            <label for="login">Usuário</label>
+            <input type="text" id="login" name="login" required>
+
+            <label for="newPassword">Nova Senha</label>
+            <input type="password" id="newPassword" name="newPassword" required>
+
+            <label for="confirmPassword">Confirmar Senha</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+            <button type="submit">SALVAR</button>
+        </form>
+        
+        <!-- Mensagens de feedback -->
+        <div th:if="${param.success}" style="color: green; margin-top: 15px; font-weight: bold;">
+            Senha alterada com sucesso!
+        </div>
+        
+        <div th:if="${param.error}" style="color: red; margin-top: 15px;">
+            <span th:if="${param.error == 'senhasNaoConferem'}">As senhas não conferem!</span>
+            <span th:if="${param.error == 'senhaFraca'}">A senha deve ter pelo menos 3 caracteres!</span>
+            <span th:if="${param.error == 'usuarioNaoEncontrado'}">Usuário não encontrado!</span>
+        </div>
+        
+        <!-- Link para voltar ao login -->
+        <div style="margin-top: 20px;">
+            <a th:href="@{/login}" style="color: var(--cor-primaria); text-decoration: none;">
+                ← Voltar para o login
+            </a>
+        </div>
+    </div>
+    
+    <!-- JavaScript para validação client-side -->
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('As senhas não conferem!');
+                return false;
+            }
+            
+            if (newPassword.length < 3) {
+                e.preventDefault();
+                alert('A senha deve ter pelo menos 3 caracteres!');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

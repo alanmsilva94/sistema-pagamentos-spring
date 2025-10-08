@@ -1,0 +1,341 @@
+/* ==== RESET ==== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ==== VARIÁVEIS DE COR ==== */
+:root {
+    --cor-primaria: #004481;
+    --cor-secundaria: #0466c8;
+    --cor-fundo: #f0f2f5;
+    --cor-clara: #ffffff;
+    --cor-hover: #e0e0e0;
+    --cor-borda: #d1d1d1;
+    --cor-sucesso: #28a745;
+    --cor-perigo: #dc3545;
+}
+
+/* ==== GERAL ==== */
+body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+    background-color: var(--cor-fundo);
+    color: #333;
+    min-height: 100vh;
+}
+
+/* ==== CABEÇALHO PRINCIPAL ==== */
+header {
+    background-color: var(--cor-primaria);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+header a {
+    text-decoration: none;
+}
+
+header button {
+    background-color: var(--cor-clara);
+    color: var(--cor-primaria);
+    border: none;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.9rem;
+}
+
+header button:hover {
+    background-color: var(--cor-hover);
+}
+
+/* ==== TÍTULO DA PÁGINA ==== */
+.titulo-pagina {
+    background-color: var(--cor-primaria);
+    padding: 1rem;
+    text-align: center;
+    color: var(--cor-clara);
+    margin-bottom: 1rem;
+}
+
+.titulo-pagina h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+/* ==== ABAS ==== */
+.abas {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    padding: 0 5%;
+}
+
+.botao-aba {
+    background: linear-gradient(to bottom, #e0e0e0, #cfcfcf);
+    color: #333;
+    border: 1px solid var(--cor-borda);
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    min-width: 180px;
+}
+
+.botao-aba:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(to bottom, #dcdcdc, #bfbfbf);
+}
+
+.botao-aba.ativo {
+    background: linear-gradient(to bottom, var(--cor-primaria), var(--cor-secundaria));
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-color: var(--cor-primaria);
+}
+
+/* ==== FORMULÁRIO ==== */
+form {
+    width: 100%;
+}
+
+.container-formulario {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 2rem;
+    margin: 0 auto;
+    width: 90%;
+    max-width: 1000px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* ==== SEÇÕES DO FORMULÁRIO ==== */
+.form-dados-gerais,
+.form-departamento {
+    display: none;
+}
+
+.form-dados-gerais.ativo,
+.form-departamento.ativo {
+    display: block;
+}
+
+/* ==== LINHAS DE CAMPOS ==== */
+.linha-campos {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.linha-campos > div {
+    flex: 1;
+    min-width: 250px;
+}
+
+/* ==== ESTILOS DOS CAMPOS ==== */
+form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+form input,
+form select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+form input:focus,
+form select:focus {
+    outline: none;
+    border-color: var(--cor-secundaria);
+    box-shadow: 0 0 0 2px rgba(4, 102, 200, 0.1);
+}
+
+form input[required] + label::after,
+form select[required] + label::after {
+    content: " *";
+    color: #e74c3c;
+}
+
+/* ==== ESTILOS ESPECÍFICOS PARA TIPOS DE INPUT ==== */
+input[type="date"] {
+    cursor: pointer;
+}
+
+input[type="number"] {
+    text-align: right;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    margin: 0;
+}
+
+/* ==== BOTÕES DE AÇÃO ==== */
+.botoes {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.botoes button {
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    min-width: 120px;
+}
+
+.botoes button[type="submit"] {
+    background-color: var(--cor-primaria);
+    color: var(--cor-clara);
+}
+
+.botoes button[type="submit"]:hover {
+    background-color: var(--cor-secundaria);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.botoes button[type="reset"] {
+    background-color: #6c757d;
+    color: white;
+}
+
+.botoes button[type="reset"]:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+}
+
+.botoes button[type="button"] {
+    background-color: #dc3545;
+    color: white;
+}
+
+.botoes button[type="button"]:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+
+/* ==== CAMPOS LARGOS (CODIGO BARRAS) ==== */
+.form-dados-gerais > div:last-child {
+    width: 100%;
+}
+
+#codigoBoleto {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+}
+
+/* ==== ANIMAÇÃO DE ENTRADA ==== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==== ESTADOS DE CARREGAMENTO ==== */
+.carregando {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.carregando::after {
+    content: " (carregando...)";
+    font-style: italic;
+    font-weight: normal;
+}
+
+/* ==== RESPONSIVIDADE ==== */
+@media (max-width: 768px) {
+    .abas {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .botao-aba {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .linha-campos > div {
+        min-width: 100%;
+    }
+    
+    .botoes {
+        justify-content: center;
+    }
+    
+    .botoes button {
+        flex: 1;
+        min-width: 100px;
+    }
+    
+    header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    header .btn-inicio,
+    header .btn-sair {
+        margin: 0;
+        width: 100%;
+    }
+    
+    .container-formulario {
+        padding: 1rem;
+        margin: 0 auto;
+        width: 95%;
+    }
+}
+
+@media (max-width: 480px) {
+    .titulo-pagina h1 {
+        font-size: 1.5rem;
+    }
+    
+    .botao-aba {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .botoes {
+        flex-direction: column;
+    }
+    
+    .botoes button {
+        width: 100%;
+    }
+}

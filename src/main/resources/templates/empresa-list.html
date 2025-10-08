@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS CORRIGIDO: usar /style/fornecedores.css -->
+    <link rel="stylesheet" th:href="@{/css/empresa.css}">
+    <title>Empresas</title>
+</head>
+<body>
+    <header>
+        <a th:href="@{/inicio}"><button class="btn-inicio">Início</button></a>
+        <a th:href="@{/logout}"><button class="btn-sair">Sair</button></a>
+    </header>
+
+    <header class="titulo-pagina">
+        <h1>EMPRESAS/FORNECEDORES</h1>
+    </header>
+
+    <div class="linha-acoes">
+        <div class="botoes">
+            <a th:href="@{/empresas/nova}"><button>Incluir</button></a>
+            <button onclick="excluirSelecionados()">Excluir</button>
+            <button onclick="editarSelecionado()">Alterar</button>
+        </div>
+
+        <div class="pesquisar">
+            <input type="text" id="pesquisar" placeholder="Pesquisar por nome ou CNPJ" onkeyup="filtrarTabela()">
+        </div>
+    </div>
+
+    <main>
+        <div class="tabela-container">
+            <table border="1" id="tabela-empresas">
+                <thead>
+                    <tr>
+                        <th>Selecionar</th>
+                        <th>ID</th>
+                        <th>CNPJ</th>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th>Email</th>
+                        <th>Cidade/UF</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="empresa : ${empresas}">
+                        <td><input type="checkbox" th:value="${empresa.id}" class="selecionar-empresa"></td>
+                        <td th:text="${empresa.id}"></td>
+                        <td th:text="${empresa.cnpj}"></td>
+                        <td th:text="${empresa.nome}"></td>
+                        <td th:text="${empresa.telefone}"></td>
+                        <td th:text="${empresa.email}"></td>
+                        <td th:text="${empresa.cidade + '/' + empresa.uf}"></td>
+                        <td>
+                            <a th:href="@{/empresas/editar/{id}(id=${empresa.id})}" class="btn-editar">Editar</a>
+                            <a th:href="@{/empresas/excluir/{id}(id=${empresa.id})}" class="btn-excluir" 
+                               onclick="return confirm('Tem certeza que deseja excluir esta empresa?')">Excluir</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${empresas.empty}">
+                        <td colspan="8" style="text-align: center;">Nenhuma empresa cadastrada</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        function filtrarTabela() {
+            const input = document.getElementById('pesquisar');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('tabela-empresas');
+            const tr = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < tr.length; i++) {
+                const tdNome = tr[i].getElementsByTagName('td')[3];
+                const tdCnpj = tr[i].getElementsByTagName('td')[2];
+                if (tdNome && tdCnpj) {
+                    const txtValueNome = tdNome.textContent || tdNome.innerText;
+                    const txtValueCnpj = tdCnpj.textContent || tdCnpj.innerText;
+                    if (txtValueNome.toLowerCase().indexOf(filter) > -1 || 
+                        txtValueCnpj.toLowerCase().indexOf(filter) > -1) {
+                        tr[i].style.display = '';
+                    } else {
+                        tr[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+        
+        function excluirSelecionados() {
+            const selecionados = document.querySelectorAll('.selecionar-empresa:checked');
+            if (selecionados.length === 0) {
+                alert('Selecione pelo menos uma empresa para excluir');
+                return;
+            }
+            if (confirm(`Tem certeza que deseja excluir ${selecionados.length} empresa(s)?`)) {
+                selecionados.forEach(checkbox => {
+                    window.location.href = '/empresas/excluir/' + checkbox.value;
+                });
+            }
+        }
+        
+        function editarSelecionado() {
+            const selecionados = document.querySelectorAll('.selecionar-empresa:checked');
+            if (selecionados.length !== 1) {
+                alert('Selecione exatamente uma empresa para editar');
+                return;
+            }
+            window.location.href = '/empresas/editar/' + selecionados[0].value;
+        }
+    </script>
+</body>
+</html>

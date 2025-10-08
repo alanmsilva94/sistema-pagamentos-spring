@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS CORRIGIDO: usar /style/pagamentos.css -->
+    <link rel="stylesheet" th:href="@{/css/pagamento.css}">
+    <title>Pagamentos</title>
+</head>
+<body>
+    <header>
+        <a th:href="@{/inicio}"><button class="btn-inicio">Início</button></a>
+        <a th:href="@{/logout}"><button class="btn-sair">Sair</button></a>
+    </header>
+
+    <header class="titulo-pagina">
+        <h1>PAGAMENTOS</h1>
+    </header>
+
+    <div class="linha-acoes">
+        <div class="botoes">
+            <a th:href="@{/pagamentos/novo}"><button>Incluir</button></a>
+            <button onclick="excluirSelecionados()">Excluir</button>
+            <button onclick="editarSelecionado()">Alterar</button>
+        </div>
+
+        <div class="pesquisar">
+            <input type="text" id="pesquisar" placeholder="Pesquisar por empresa ou valor" onkeyup="filtrarTabela()">
+        </div>
+    </div>
+
+    <main>
+        <div class="tabela-container">
+            <table border="1" id="tabela-pagamentos">
+                <thead>
+                    <tr>
+                        <th>Selecionar</th>
+                        <th>Empresa</th>
+                        <th>CNPJ</th>
+                        <th>Data Pagamento</th>
+                        <th>Valor</th>
+                        <th>Funcionário</th>
+                        <th>Código Boleto</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="pagamento : ${pagamentos}">
+                        <td><input type="checkbox" th:value="${pagamento.id}" class="selecionar-pagamento"></td>
+                        <td th:text="${pagamento.empresa?.nome} ?: 'N/A'"></td>
+                        <td th:text="${pagamento.empresa?.cnpj} ?: 'N/A'"></td>
+                        <td th:text="${pagamento.dataPagamento != null} ? ${#temporals.format(pagamento.dataPagamento, 'dd/MM/yyyy')} : 'N/A'"></td>
+                        <td th:text="${'R$ ' + #numbers.formatDecimal(pagamento.valor, 1, 2, 'POINT')}"></td>
+                        <td th:text="${pagamento.funcionario?.nome} ?: 'N/A'"></td>
+                        <td th:text="${pagamento.codigoBoleto} ?: 'N/A'"></td>
+                        <td>
+                            <a th:href="@{/pagamentos/editar/{id}(id=${pagamento.id})}" class="btn-editar">Editar</a>
+                            <a th:href="@{/pagamentos/excluir/{id}(id=${pagamento.id})}" class="btn-excluir" 
+                               onclick="return confirm('Tem certeza que deseja excluir este pagamento?')">Excluir</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${pagamentos.empty}">
+                        <td colspan="8" style="text-align: center; padding: 20px;">
+                            Nenhum pagamento cadastrado. 
+                            <a th:href="@{/pagamentos/novo}">Clique aqui para cadastrar o primeiro pagamento.</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        function filtrarTabela() {
+            const input = document.getElementById('pesquisar');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('tabela-pagamentos');
+            const tr = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < tr.length; i++) {
+                const tdEmpresa = tr[i].getElementsByTagName('td')[1];
+                const tdValor = tr[i].getElementsByTagName('td')[4];
+                if (tdEmpresa && tdValor) {
+                    const txtValueEmpresa = tdEmpresa.textContent || tdEmpresa.innerText;
+                    const txtValueValor = tdValor.textContent || tdValor.innerText;
+                    if (txtValueEmpresa.toLowerCase().indexOf(filter) > -1 || 
+                        txtValueValor.toLowerCase().indexOf(filter) > -1) {
+                        tr[i].style.display = '';
+                    } else {
+                        tr[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+        
+        function excluirSelecionados() {
+            const selecionados = document.querySelectorAll('.selecionar-pagamento:checked');
+            if (selecionados.length === 0) {
+                alert('Selecione pelo menos um pagamento para excluir');
+                return;
+            }
+            if (confirm(`Tem certeza que deseja excluir ${selecionados.length} pagamento(s)?`)) {
+                selecionados.forEach(checkbox => {
+                    window.location.href = '/pagamentos/excluir/' + checkbox.value;
+                });
+            }
+        }
+        
+        function editarSelecionado() {
+            const selecionados = document.querySelectorAll('.selecionar-pagamento:checked');
+            if (selecionados.length !== 1) {
+                alert('Selecione exatamente um pagamento para editar');
+                return;
+            }
+            window.location.href = '/pagamentos/editar/' + selecionados[0].value;
+        }
+    </script>
+</body>
+</html>

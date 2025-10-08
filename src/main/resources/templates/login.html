@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link th:href="@{/css/login.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <div class="logotipo">
+             <img th:src="@{/img/logo.png}" alt="Logo da Empresa" />
+        </div>
+        <h2>LOGIN</h2>
+        
+        <!-- FORM CORRIGIDO: action aponta para /login (POST) e names corretos -->
+        <form th:action="@{/login}" method="post">
+            <label for="username">Usuário</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit">LOG IN</button>
+        </form>
+        
+        <div class="forgot-password">
+            <!-- LINK CORRIGIDO: aponta para /recuperar-senha -->
+            <a th:href="@{/recuperar-senha}">Esqueceu a senha?</a>
+        </div>
+        
+        <!-- MENSAGEM DE ERRO -->
+        <div th:if="${param.error}" style="color: red; margin-top: 10px;">
+            Usuário ou senha inválidos!
+        </div>
+    </div>
+</body>
+</html>
